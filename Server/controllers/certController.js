@@ -39,12 +39,9 @@ function getPublicIdFromUrl(url) {
     const { title } = req.body;
     const file = req.file;
 
-    // Validate certId and file
+    // Validate certId
     if (!certId) {
         return res.status(400).json({ message: "Invalid certificate ID" });
-    }
-    if (!file) {
-        return res.status(400).json({ message: "No file uploaded" });
     }
 
     try {
@@ -53,22 +50,25 @@ function getPublicIdFromUrl(url) {
             return res.status(404).json({ message: "Certificate not found" });
         }
 
-        // Get publicId and delete the existing image from Cloudinary
-        const publicId = getPublicIdFromUrl(cert.image);
-        const deletionResponse = await deleteFromCloudinary(publicId);
-
-        if (!deletionResponse) {
-            return res.status(500).json({ message: "Failed to delete image from Cloudinary" });
-        }
-
-        // Upload the new image
-        const uploadedFile = await uploadOnCloudinary(file.path);
-        if (!uploadedFile) {
-            return res.status(500).json({ message: "Failed to upload image on Cloudinary" });
-        }
-
         cert.title = title;
-        cert.image = uploadedFile.secure_url;
+
+        if (file) {
+            // Get publicId and delete the existing image from Cloudinary
+            const publicId = getPublicIdFromUrl(cert.image);
+            const deletionResponse = await deleteFromCloudinary(publicId);
+
+            if (!deletionResponse) {
+                return res.status(500).json({ message: "Failed to delete image from Cloudinary" });
+            }
+
+            // Upload the new image
+            const uploadedFile = await uploadOnCloudinary(file.path);
+            if (!uploadedFile) {
+                return res.status(500).json({ message: "Failed to upload image on Cloudinary" });
+            }
+
+            cert.image = uploadedFile.secure_url;
+        }
 
         await cert.save(); 
 
@@ -85,3 +85,33 @@ export const getCertificates = async (req, res) => {
         }
        res.status(200).json({message: "All Syllabus", Certificates: cert});
 }
+
+export const deleteCertController = async (req, res) => {
+    const { certId } = req.params;
+
+    if (!certId) {
+        return res.status(400).json({ message: "Invalid certificate ID" });
+    }
+
+    try {
+        const cert = await certModel.findById(certId);
+        if (!cert) {
+            return res.status(404).json({ message: "Certificate not found" });
+        }
+
+        // Extract publicId from Cloudinary URL and delete the image
+        const publicId = getPublicIdFromUrl(cert.image);
+        const deletionResponse = await deleteFromCloudinary(publicId);
+
+        if (!deletionResponse) {
+            return res.status(500).json({ message: "Failed to delete image from Cloudinary" });
+        }
+
+        await cert.deleteOne();
+
+        res.status(200).json({ message: "Certificate deleted successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};

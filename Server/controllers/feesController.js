@@ -27,7 +27,7 @@ export const feesController = async (req, res) => {
     if (!uploadedFile) {
       return res.status(500).json({ message: "Failed to upload file to Cloudinary" });
     }
-
+    //console.log(getPublicIdFromUrl(uploadedFile.secure_url));
     const newFile = new File({
       title,
       description: uploadedFile.secure_url,
@@ -41,50 +41,107 @@ export const feesController = async (req, res) => {
 };
 
 function getPublicIdFromUrl(url) {
-  // Get the part after '/upload/' and before the file extension
-  const path = url.split('/upload/')[1].split('.')[0];
-  
-  // Remove the version part (e.g., 'v1612345678/') if present
-  const publicId = path.includes('/') ? path.split('/').slice(1).join('/') : path;
-
-  return publicId;
+  try {
+    const urlObj = new URL(url);
+    const segments = urlObj.pathname.split('/upload/');
+    if (segments.length < 2) {
+      console.error("Invalid Cloudinary URL format:", url);
+      return null;
+    }
+    const publicIdWithExtension = segments[1];
+    const publicId = publicIdWithExtension.substring(0, publicIdWithExtension.lastIndexOf('.'));
+    
+    // Remove version prefix if present (e.g., "v1736620878/")
+    const cleanedPublicId = publicId.split('/').slice(1).join('/');
+    
+    return cleanedPublicId;
+  } catch (error) {
+    console.error("Error parsing URL:", error);
+    return null;
+  }
 }
 
 export const editFeesController = async (req, res) => {
-          const {title} = req.body;
-          const { feesId } = req.params; 
+  try {
+    const { title } = req.body;
+    const { feesId } = req.params; 
 
-          if(!title){
-            return res.status(400).json({ message: "Invalid title" });
-          }
-         if (!mongoose.Types.ObjectId.isValid(feesId)) {
-              return res.status(400).json({ message: "Invalid id" });
-          }
+    if (!title) {
+      return res.status(400).json({ message: "Invalid title" });
+    }
+    if (!mongoose.Types.ObjectId.isValid(feesId)) {
+      return res.status(400).json({ message: "Invalid id" });
+    }
 
+    const fee = await File.findById(feesId);
+    if (!fee) {
+      return res.status(400).json({ message: "Invalid id" });
+    }
 
-        const file =await File.findById(feesId);
-        if(!file){
-            return res.status(400).json({message: "Invalid id"});
-        }
-        const public_id = getPublicIdFromUrl(file.description);
+    const public_id = getPublicIdFromUrl(fee.description);
+    if (!public_id) {
+      return res.status(400).json({ message: "Invalid image URL" });
+    }
 
-        const verify = await deleteFromCloudinary(public_id);
+    console.log(`Attempting to delete Cloudinary image with public_id: ${public_id}`);
 
-        if(!verify){
-          return res.status(500).json({message: "Failed to delete file from Cloudinary"});
-        }
+    const verify = await deleteFromCloudinary(public_id, "image"); // Added resource_type
 
-        const url = await uploadOnCloudinary(req.file.path);
-        if(!url){
-          return res.status(500).json({message: "Failed to upload file on Cloudinary"});
-        }
-        file.title = title;
-        file.description = url.secure_url;
-        await file.save();
-        res.status(200).json({message: "Fees updated successfully", file});        
-}
-export const getFees = (req,res)=>{
-     const fees = File.find();
+    if (!verify) {
+      return res.status(500).json({ message: "Failed to delete file from Cloudinary" });
+    }
+
+    const uploadedUrl = req.file ? await uploadOnCloudinary(req.file.path) : null;
+    if (req.file && !uploadedUrl) {
+      return res.status(500).json({ message: "Failed to upload new file to Cloudinary" });
+    }
+
+    if (uploadedUrl) {
+      fee.description = uploadedUrl.secure_url;
+    }
+    fee.title = title;
+    await fee.save();
+
+    res.status(200).json({ message: "Fees updated successfully", file: fee });
+  } catch (error) {
+    console.error("Edit Fees Error:", error);
+    res.status(500).json({ message: "An error occurred", error: error.message });
+  }
+};
+
+export const deleteFeesController = async (req, res) => {
+  try {
+    const { feesId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(feesId)) {
+      return res.status(400).json({ message: "Invalid fee ID" });
+    }
+
+    const fee = await File.findById(feesId);
+    if (!fee) {
+      return res.status(404).json({ message: "Fee detail not found" });
+    }
+
+    const public_id = getPublicIdFromUrl(fee.description);
+
+    //console.log(`Attempting to delete Cloudinary image with public_id: ${public_id}`);
+
+    const deleted = await deleteFromCloudinary(public_id, "image"); // Added resource_type
+
+    if (!deleted) {
+      return res.status(500).json({ message: "Failed to delete image from Cloudinary" });
+    }
+
+    await File.findByIdAndDelete(feesId);
+
+    res.status(200).json({ message: "Fee detail deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "An error occurred", error: error.message });
+  }
+};
+
+export const getFees = async (req,res)=>{
+     const fees = await File.find();
      if(!fees){
        return res.status(404).json({message: "No fees details available"});
      }

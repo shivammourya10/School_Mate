@@ -17,7 +17,7 @@ export const uploadOnCloudinary = async(localFilePath)=>{
         const response = await cloudinary.uploader.upload(localFilePath, {
             resource_type: "auto",
             quality: "auto",
-            fetc_format: "auto",
+            fetch_format: "auto", // Corrected typo from fetc_format to fetch_format
         })
         fs.unlinkSync(localFilePath);
         return response;
@@ -27,12 +27,23 @@ export const uploadOnCloudinary = async(localFilePath)=>{
         return null;
     }
 }
-export const deleteFromCloudinary = async(publicId)=>{
-    try{
-        await cloudinary.uploader.destroy(publicId);
+
+export const deleteFromCloudinary = async (publicId) => {
+    try {
+        if (!publicId) {
+            console.error("No public_id provided for deletion.");
+            return false;
+        }
+        console.log(publicId);
+        const result = await cloudinary.uploader.destroy(publicId, { resource_type: "image" });
+        console.log(result);
+        if (result.result !== 'ok' && result.result !== 'not found') {
+            console.error(`Cloudinary deletion failed for publicId: ${publicId}`, result);
+            return false;
+        }
         return true;
-    }catch(e){
-        console.log(e);
+    } catch (error) {
+        console.error(`Cloudinary deletion error for publicId ${publicId}:`, error);
         return false;
     }
-}
+};

@@ -87,3 +87,31 @@ export const getSyllabus = async (req, res) => {
         }
        res.status(200).json({message: "All Syllabus", syllabus: syll});
 }
+
+// Add deleteSyllabusController
+export const deleteSyllabusController = async (req, res) => {
+    const { syllabusId } = req.params;
+
+    try {
+        // Find the syllabus to be deleted
+        const syll = await syllabus.findById(syllabusId);
+        if (!syll) {
+            return res.status(404).json({ message: "Syllabus not found" });
+        }
+
+        // Delete the file from Cloudinary
+        const publicId = getPublicIdFromUrl(syll.description);
+        const deletionResponse = await deleteFromCloudinary(publicId);
+        if (!deletionResponse) {
+            return res.status(500).json({ message: "Failed to delete file from Cloudinary" });
+        }
+
+        // Remove the syllabus from the database
+        await syllabus.findByIdAndDelete(syllabusId);
+
+        res.status(200).json({ message: "Syllabus deleted successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
