@@ -44,7 +44,9 @@ export const addImageToAlbumController = async (req, res) => {
             image: uploadedFile.secure_url
         });
 
-        album.image.push(image._id);
+
+
+        album.images.push(image._id); // Changed 'image' to 'images'
         await album.save();
 
         res.status(201).json({ message: "Image added to album successfully", album });
@@ -58,12 +60,18 @@ export const getImagesFromAlbumController = async (req, res) => {
     const { albumId } = req.params;
 
     try {
-        const album = await albumModel.findById(albumId).populate('image');
+        const album = await albumModel.findById(albumId).populate('images'); // Changed 'image' to 'images'
         if (!album) {
             return res.status(404).json({ message: "Album not found" });
         }
 
-        res.status(200).json({ message: "Images retrieved successfully", images: album.image });
+        // Modified response to include album name and description
+        res.status(200).json({ 
+            message: "Images retrieved successfully", 
+            name: album.name,
+            description: album.description,
+            images: album.images 
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal Server Error" });
@@ -79,12 +87,12 @@ export const deleteImageFromAlbumController = async (req, res) => {
             return res.status(404).json({ message: "Album not found" });
         }
         console.log(imageId)
-        const imageIndex = album.image.indexOf(imageId);
+        const imageIndex = album.images.indexOf(imageId); // Changed 'image' to 'images'
         if (imageIndex === -1) {
             return res.status(404).json({ message: "Image not found in album" });
         }
 
-        album.image.splice(imageIndex, 1);
+        album.images.splice(imageIndex, 1); // Changed 'image' to 'images'
         await album.save();
 
         await childrenModel.findByIdAndDelete(imageId);
@@ -105,3 +113,21 @@ export const getAllAlbumNamesController = async (req, res) => {
         res.status(500).json({ message: "Internal Server Error" });
     }
 };
+
+export const getAlbumDetailsController = async (req, res) => {
+    const { albumId } = req.params;
+
+    try {
+        const album = await albumModel.findById(albumId).populate('images'); // Ensured 'images' is used
+        if (!album) {
+            return res.status(404).json({ message: "Album not found" });
+        }
+
+        res.status(200).json({ message: "Album details retrieved successfully", album });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error" });
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+    

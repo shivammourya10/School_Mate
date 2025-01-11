@@ -1,20 +1,20 @@
 import mongoose from "mongoose";
 
-const albumnSchema = new mongoose.Schema({
-    name :{
+const albumSchema = new mongoose.Schema({
+    name: {
         type: String,
         required: true
     },
-    description :{
+    description: {
         type: String,
         required: true
     },
-    image :[{
+    images: [{ // Renamed from 'image' to 'images'
         type: mongoose.Schema.Types.ObjectId,
         ref: "Children",
     }],
-},{
+}, {
     timestamps: true,
 })
 
-export default mongoose.model("Album", albumnSchema);
+export default mongoose.model("Album", albumSchema);

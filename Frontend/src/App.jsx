@@ -11,6 +11,9 @@ import ViewImgGalleryPage from './pages/ViewImgGalleryPage'
 import UploadCertPage from './pages/UploadCertPage'
 import UploadSyllabusPage from './pages/UploadSyllabusPage'
 import UploadFeesPage from './pages/UploadFeesPage'
+import UploadImgGalleryPage from './pages/UploadGalleryItemPage'
+
+
 
 
 function App() {
@@ -29,6 +32,8 @@ function App() {
         <Route path="/admin-add-certificates" element={<UploadCertPage />} />
         <Route path="/admin-add-syllabus" element={<UploadSyllabusPage />} />
         <Route path="/admin-add-fees" element={<UploadFeesPage />} />
+        <Route path="/admin-add-gallery" element={<UploadImgGalleryPage />} />
+        <Route path='/admin-getgallery' element={<ViewImgGalleryPage />} />
 
       </Routes>
     </div>

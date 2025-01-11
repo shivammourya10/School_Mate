@@ -7,7 +7,7 @@ import {certController , updateCertController, getCertificates, deleteCertContro
 import {createAlbumController,addImageToAlbumController,getImagesFromAlbumController,deleteImageFromAlbumController, getAllAlbumNamesController} from '../controllers/albumController.js';
 import {syllabusController,updateSyllabusController, getSyllabus, deleteSyllabusController} from '../controllers/syllabusController.js'
 import {feesController,editFeesController,getFees, deleteFeesController} from "../controllers/feesController.js"
-
+import {getAlbumDetailsController} from "../controllers/albumController.js";
 
 const router = express.Router();
 
@@ -28,8 +28,11 @@ router.put('/syllabusUp/:syllabusId',upload.single('file'),updateSyllabusControl
 router.get('/syllabus',getSyllabus);
 router.get('/certificates',getCertificates);
 router.get('/fees', getFees);
-router.get('/albumnImages/:albumId',getImagesFromAlbumController);
+router.get('/albumImages/:albumId',getImagesFromAlbumController); // Corrected 'albumnImages' to 'albumImages'
 router.get('/albumNames', getAllAlbumNamesController);
+
+// Add the new route for fetching album details
+router.get('/album/:albumId', getAlbumDetailsController);
 
 router.delete('/albumnImages/:albumId/:imageId',deleteImageFromAlbumController);
 router.delete('/certificateUp/:certId', deleteCertController);

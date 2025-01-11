@@ -88,7 +88,7 @@ const AdminHomePage = () => {
     },
     {
       title: "Add Gallery Item",
-      route: "/children/add",
+      route: "/admin-add-gallery",
       icon: "➕",
       count: 0,
       isAddCard: true
