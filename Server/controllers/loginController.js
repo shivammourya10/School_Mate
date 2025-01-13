@@ -8,10 +8,12 @@ const isString = z.string();
 
 const loginController = async (req, res) => {
     const { username, password } = req.body;
+    
 
     // Validate inputs using Zod
     const isUsernameValid = isString.safeParse(username);
     const isPasswordValid = isString.safeParse(password);
+
     
     if (!isUsernameValid.success) {
         return res.status(400).json({
@@ -52,6 +54,31 @@ const loginController = async (req, res) => {
 
     // Respond with success message and token (optional)
     res.status(200).json({ message: "Login successful", token });
+};
+
+export const verifyAdminToken = async (req, res) => {
+    try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader) {
+            return res.status(401).json({ message: "No token provided." });
+        }
+
+        const token = authHeader.split(" ")[1];
+        // Verify token
+        jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
+            if (err) {
+                return res.status(401).json({ message: "Token invalid or expired." });
+            }
+            // Optionally fetch admin details from DB if needed
+            const admin = await AdminModel.findById(decoded.userId);
+            if (!admin) {
+                return res.status(404).json({ message: "Admin not found." });
+            }
+            return res.status(200).json({ message: "Token is valid.", admin });
+        });
+    } catch (error) {
+        return res.status(500).json({ message: "Server error verifying token." });
+    }
 };
 
 export default loginController;

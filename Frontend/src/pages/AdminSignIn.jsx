@@ -15,15 +15,15 @@ function AdminSignIn() {
 
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/admins/login`,
+        `${import.meta.env.VITE_BASE_URL}/api/adminLogin`,
         { username, password },
-        { withCredentials: true } // Important for handling cookies
       );
 
       if (response.status === 200) {
-        // Store token if needed
-        localStorage.setItem('authToken', response.data.token);
-        navigate("/dashboard"); // Redirect to dashboard after successful login
+        // Store token with consistent key 'token'
+        localStorage.setItem('auth_token', response.data.token);
+
+        navigate("/admin-homepage"); // Redirect to dashboard after successful login
       }
     } catch (error) {
       console.error("Login error:", error.response?.data || error.message);
@@ -36,13 +36,13 @@ function AdminSignIn() {
       <div className="max-w-md mx-auto w-full bg-white rounded-xl shadow-lg p-6 sm:p-8 mt-10">
         <div className="text-center mb-8">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Welcome Back</h1>
-          <p className="text-gray-600 mt-2">Sign in to your admin account</p>
+          <p className="text-gray-600 mt-2">Sign in to your  account</p>
         </div>
 
         <form onSubmit={submitHandler} className="space-y-6">
           <div>
             <label htmlFor="username" className="block text-sm font-semibold text-gray-700 mb-1">
-              Username
+              Email
             </label>
             <input
               id="username"
@@ -101,18 +101,13 @@ function AdminSignIn() {
             Sign In
           </button>
 
-          <p className="text-center text-gray-600">
-            Don't have an account?{" "}
-            <Link to="/admin-signup" className="text-blue-600 hover:text-blue-700 font-medium">
-              Create account
-            </Link>
-          </p>
+
         </form>
       </div>
 
       <div className="max-w-md mx-auto w-full mt-8">
         <p className="text-xs text-gray-500 text-center px-4">
-          By signing in, you agree to School_Mate's{" "}
+          By signing in, you agree to{" "}
           <span className="underline cursor-pointer">Terms of Service</span> and{" "}
           <span className="underline cursor-pointer">Privacy Policy</span>
         </p>
