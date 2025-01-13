@@ -19,13 +19,13 @@ function App() {
         <Route path="/admin-signup" element={<AdminSignUp />} />
         <Route path="/admin-signin" element={<AdminSignIn />} />
 
-        <Route element={<AdminProtectedWrapper />}>
+        {/* <Route element={<AdminProtectedWrapper />}> */}
           <Route path="/admin-homepage" element={<AdminHomePage />} />
           <Route path="/admin-getcertificates" element={<ViewCertPage />} />
           <Route path="/admin-getsyllabus" element={<ViewSyllabusPage />} />
           <Route path="/admin-getfees" element={<ViewFeesPage />} />
           <Route path="/admin-getgallery" element={<ViewImgGalleryPage />} />
-        </Route>
+        {/* </Route> */}
       </Routes>
     </div>
   )
