@@ -44,9 +44,13 @@ export const addImageToAlbumController = async (req, res) => {
             image: uploadedFile.secure_url
         });
 
+<<<<<<< HEAD
 
 
         album.images.push(image._id); // Changed 'image' to 'images'
+=======
+        album.image.push(image._id);
+>>>>>>> ee7d8af06587b8be6856151f3924bace468bec85
         await album.save();
 
         res.status(201).json({ message: "Image added to album successfully", album });
@@ -60,11 +64,16 @@ export const getImagesFromAlbumController = async (req, res) => {
     const { albumId } = req.params;
 
     try {
+<<<<<<< HEAD
         const album = await albumModel.findById(albumId).populate('images'); // Changed 'image' to 'images'
+=======
+        const album = await albumModel.findById(albumId).populate('image');
+>>>>>>> ee7d8af06587b8be6856151f3924bace468bec85
         if (!album) {
             return res.status(404).json({ message: "Album not found" });
         }
 
+<<<<<<< HEAD
         // Modified response to include album name and description
         res.status(200).json({ 
             message: "Images retrieved successfully", 
@@ -72,6 +81,9 @@ export const getImagesFromAlbumController = async (req, res) => {
             description: album.description,
             images: album.images 
         });
+=======
+        res.status(200).json({ message: "Images retrieved successfully", images: album.image });
+>>>>>>> ee7d8af06587b8be6856151f3924bace468bec85
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal Server Error" });
@@ -87,12 +99,20 @@ export const deleteImageFromAlbumController = async (req, res) => {
             return res.status(404).json({ message: "Album not found" });
         }
         console.log(imageId)
+<<<<<<< HEAD
         const imageIndex = album.images.indexOf(imageId); // Changed 'image' to 'images'
+=======
+        const imageIndex = album.image.indexOf(imageId);
+>>>>>>> ee7d8af06587b8be6856151f3924bace468bec85
         if (imageIndex === -1) {
             return res.status(404).json({ message: "Image not found in album" });
         }
 
+<<<<<<< HEAD
         album.images.splice(imageIndex, 1); // Changed 'image' to 'images'
+=======
+        album.image.splice(imageIndex, 1);
+>>>>>>> ee7d8af06587b8be6856151f3924bace468bec85
         await album.save();
 
         await childrenModel.findByIdAndDelete(imageId);
@@ -102,6 +122,7 @@ export const deleteImageFromAlbumController = async (req, res) => {
         console.error(error);
         res.status(500).json({ message: "Internal Server Error" });
     }
+<<<<<<< HEAD
 };
 
 export const getAllAlbumNamesController = async (req, res) => {
@@ -131,3 +152,6 @@ export const getAlbumDetailsController = async (req, res) => {
     }
 };
     
+=======
+};
+>>>>>>> ee7d8af06587b8be6856151f3924bace468bec85
