@@ -12,7 +12,19 @@ const AdminHomePage = () => {
   });
   const [showMenu, setShowMenu] = useState(false);
   const navigate = useNavigate();
+  const logout = async () =>{
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/adminLogout`,{ withCredentials: true });
+      if (response.status === 200) {
+        navigate("/admin-signin");
+      }
+    } catch (error) {
+      console.error("Logout error:", error.response?.data || error.message);
+      
+    }
+  }
 
+ 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
@@ -120,7 +132,7 @@ const AdminHomePage = () => {
                 Change Password
               </button>
               <button
-                onClick={() => navigate("/logout")}
+                onClick={logout}
                 className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
               >
                 Logout

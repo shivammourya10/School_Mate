@@ -23,7 +23,8 @@ function AdminSignIn() {
         // Store token with consistent key 'token'
         localStorage.setItem('auth_token', response.data.token);
 
-        navigate("/admin-homepage"); // Redirect to dashboard after successful login
+        // navigate("/admin-homepage");
+        window.location.href = "/admin-homepage"; // Redirect to dashboard after successful login
       }
     } catch (error) {
       console.error("Login error:", error.response?.data || error.message);
