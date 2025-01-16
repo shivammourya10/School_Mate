@@ -8,22 +8,24 @@ import {createAlbumController,addImageToAlbumController,getImagesFromAlbumContro
 import {syllabusController,updateSyllabusController, getSyllabus, deleteSyllabusController} from '../controllers/syllabusController.js'
 import {feesController,editFeesController,getFees, deleteFeesController} from "../controllers/feesController.js"
 import {getAlbumDetailsController} from "../controllers/albumController.js";
+import logoutController from '../controllers/logoutController.js';
 
 const router = express.Router();
 
 // Route for admin login
 router.post('/adminLogin', loginController);
 router.post('/adminRegister', registerController);
-router.post('/certificateUp',upload.single('file'),certController);
-router.post('/syllabusUp',upload.single('file'),syllabusController);
-router.post('/feesUp',upload.single('file'),feesController);
-router.post('/albumnUp',createAlbumController);
-router.post('/albumnImage/:albumId',upload.single('file'),addImageToAlbumController);
+router.post('/certificateUp',verifyAdmin,upload.single('file'),certController);
+router.post('/syllabusUp',verifyAdmin,upload.single('file'),syllabusController);
+router.post('/feesUp',verifyAdmin,upload.single('file'),feesController);
+router.post('/albumnUp',verifyAdmin,createAlbumController);
+router.post('/albumnImage/:albumId',verifyAdmin,upload.single('file'),addImageToAlbumController);
+router.post('/logout',logoutController);
 
 
-router.put('/feesUp/:feesId',upload.single('file'),editFeesController);
-router.put('/certificateUp/:certId',upload.single('file'),updateCertController);
-router.put('/syllabusUp/:syllabusId',upload.single('file'),updateSyllabusController);
+router.put('/feesUp/:feesId',verifyAdmin,upload.single('file'),editFeesController);
+router.put('/certificateUp/:certId',verifyAdmin,upload.single('file'),updateCertController);
+router.put('/syllabusUp/:syllabusId',verifyAdmin,upload.single('file'),updateSyllabusController);
 
 router.get('/syllabus',getSyllabus);
 router.get('/certificates',getCertificates);
@@ -34,9 +36,9 @@ router.get('/albumNames', getAllAlbumNamesController);
 // Add the new route for fetching album details
 router.get('/album/:albumId', getAlbumDetailsController);
 
-router.delete('/albumnImages/:albumId/:imageId',deleteImageFromAlbumController);
-router.delete('/certificateUp/:certId', deleteCertController);
-router.delete('/syllabus/:syllabusId', deleteSyllabusController);
-router.delete('/fees/:feesId', deleteFeesController);
+router.delete('/albumnImages/:albumId/:imageId',verifyAdmin,deleteImageFromAlbumController);
+router.delete('/certificateUp/:certId',verifyAdmin, deleteCertController);
+router.delete('/syllabus/:syllabusId',verifyAdmin, deleteSyllabusController);
+router.delete('/fees/:feesId',verifyAdmin, deleteFeesController);
 
 export default router;

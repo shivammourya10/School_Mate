@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import DashboardCard from "../components/DashboardCard";
@@ -35,7 +35,17 @@ const AdminHomePage = () => {
 
     fetchDashboardData();
   }, []);
-
+  const logout = async () =>{
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/logout`);
+      if (response.status === 200) {
+        navigate("/admin-signin");
+      }
+    } catch (error) {
+      console.error("Logout error:", error.response?.data || error.message);
+      
+    }
+  }
   const cardConfigs = [
     {
       title: "View Certificates",
@@ -120,7 +130,7 @@ const AdminHomePage = () => {
                 Change Password
               </button>
               <button
-                onClick={() => navigate("/logout")}
+                onClick={logout}
                 className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
               >
                 Logout
