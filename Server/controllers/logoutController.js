@@ -2,9 +2,9 @@ const logout = (req, res) => {
     try {
       // Clear the 'auth_token' cookie
       res.clearCookie('auth_token', {
-        httpOnly: true, // Ensures cookie is only accessible by the server
-        secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-        sameSite: 'Strict', // Prevent CSRF attacks
+       // httpOnly: true, // Ensures cookie is only accessible by the server
+       // secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+        //sameSite: 'Strict', // Prevent CSRF attacks
       });
   
       console.log("User logged out successfully");

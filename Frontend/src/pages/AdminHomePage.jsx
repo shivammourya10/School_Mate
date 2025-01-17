@@ -14,7 +14,12 @@ const AdminHomePage = () => {
   const navigate = useNavigate();
   const logout = async () =>{
     try {
-      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/adminLogout`,{ withCredentials: true });
+      
+      localStorage.removeItem('auth_token');
+      navigate("/admin-signin");
+
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/adminLogout`,
+        { withCredentials: true });
       if (response.status === 200) {
         navigate("/admin-signin");
       }
