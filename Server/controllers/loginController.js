@@ -7,43 +7,50 @@ import { z } from "zod";
 const isString = z.string();
 
 const loginController = async (req, res) => {
-    const { username, password } = req.body;
     
+        if (!req.body) {
+            return res.status(400).json({ message: "Request body is missing" });
+        }
 
-    // Validate inputs using Zod
-    const isUsernameValid = isString.safeParse(username);
-    const isPasswordValid = isString.safeParse(password);
+        const { username, password } = req.body;
 
-    
-    if (!isUsernameValid.success) {
-        return res.status(400).json({
-            message: "Invalid username"
-        });
-    }
-    if (!isPasswordValid.success) {
-        return res.status(400).json({
-            message: "Invalid password"
-        });
-    }
+        // Validate inputs using Zod
+        const isUsernameValid = isString.safeParse(username);
+        const isPasswordValid = isString.safeParse(password);
 
-    // Check if the user exists
-    const user = await AdminModel.findOne({ username });
-    if (!user) {
-        return res.status(400).json({ message: "Invalid credentials" });
-    }
+        if (!isUsernameValid.success) {
+            return res.status(400).json({
+                message: "Invalid username"
+            });
+        }
+        if (!isPasswordValid.success) {
+            return res.status(400).json({
+                message: "password not found"
+            });
+        }
 
-    // Compare passwords
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-        return res.status(400).json({ message: "Invalid credentials" });
-    }
+        // Check if the user exists
+        const user = await AdminModel.findOne({ username });
+        if (!user) {
+            return res.status(400).json({ message: "Invalid credentials" });
+        }
 
-    // Generate JWT token
-    const token = jwt.sign(
-        { userId: user._id, username: user.username },
-        process.env.JWT_SECRET, 
-        { expiresIn: "1h" } 
-    );
+        // Compare passwords
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ message: "Invalid credentials" });
+        }
+
+        if (!process.env.JWT_SECRET) {
+            return res.status(500).json({ message: "JWT secret is not defined" });
+        }
+
+        // Generate JWT token
+        const token = jwt.sign(
+            { userId: user._id, username: user.username },
+            process.env.JWT_SECRET, 
+            { expiresIn: "1h" }
+        );
 
     // Send token in cookie (ensure secure for production)
     res.cookie("auth_token", token, {

@@ -45,8 +45,8 @@ export const addImageToAlbumController = async (req, res) => {
         });
 
 
-
         album.images.push(image._id); // Changed 'image' to 'images'
+
         await album.save();
 
         res.status(201).json({ message: "Image added to album successfully", album });
@@ -61,6 +61,7 @@ export const getImagesFromAlbumController = async (req, res) => {
 
     try {
         const album = await albumModel.findById(albumId).populate('images'); // Changed 'image' to 'images'
+
         if (!album) {
             return res.status(404).json({ message: "Album not found" });
         }

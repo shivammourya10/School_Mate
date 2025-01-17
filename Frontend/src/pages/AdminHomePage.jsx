@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import DashboardCard from "../components/DashboardCard";
@@ -52,7 +52,7 @@ const AdminHomePage = () => {
 
     fetchDashboardData();
   }, []);
-
+  
   const cardConfigs = [
     {
       title: "View Certificates",
