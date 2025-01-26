@@ -57,10 +57,10 @@ const ViewImgGalleryPage = () => {
       
       setLoading(true);
       setError(null); // Clear previous errors
-      console.log(selectedAlbum);
+       
       try {
         const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/albumImages/${selectedAlbum._id}`);
-        console.log('Album Images Response:', response.data); // Add this for debugging
+         
         
         if (!response.data || !response.data.images) {
             throw new Error('Invalid response format');
