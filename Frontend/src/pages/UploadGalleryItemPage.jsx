@@ -39,7 +39,11 @@ const UploadGalleryItemPage = () => {
       const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/albumnUp`, {
         name: newAlbumName,
         description: newAlbumDescription,
-      });
+        
+        
+      },
+      {withCredentials: true}
+    );
       setAlbumNames([...albumNames, response.data.album]);
       setNewAlbumName("");
       setNewAlbumDescription("");
@@ -72,6 +76,7 @@ const UploadGalleryItemPage = () => {
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
+          withCredentials: true
         }
       );
       setUploadSuccess("Image uploaded successfully.");

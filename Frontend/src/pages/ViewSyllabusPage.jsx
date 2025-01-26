@@ -76,6 +76,7 @@ function ViewSyllabusPage() {
         formData,
         {
           headers: { 'Content-Type': 'multipart/form-data' },
+          withCredentials: true
         }
       );
       // Update syllabi state

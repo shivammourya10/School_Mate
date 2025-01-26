@@ -38,6 +38,7 @@ const UploadSyllabusPage = () => {
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
+          withCredentials: true
         }
       );
       setUploadSuccess("Syllabus uploaded successfully."); // Set success message
@@ -81,6 +82,7 @@ const UploadSyllabusPage = () => {
         formData,
         {
           headers: { 'Content-Type': 'multipart/form-data' },
+          withCredentials: true
         }
       );
       setUpdateLoading(false);
@@ -104,6 +106,7 @@ const UploadSyllabusPage = () => {
     try {
       await axios.delete(
         `${import.meta.env.VITE_BASE_URL}/api/syllabus/${currentSyllabus._id}`
+        
       );
       setUpdateLoading(false);
       closeDeleteModal();

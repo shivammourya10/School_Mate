@@ -2,29 +2,35 @@ import jwt from "jsonwebtoken";
 
 const verifyJwt = async (req, res, next) => {
     try {
-        console.log("first")
-        // Get the token from the Authorization header
-        const authHeader = req.headers.authorization("auth_token");
-        console.log("hello snijv ",authHeader)
-        if (!authHeader || !authHeader.startsWith("Bearer ")) {
-            return res.status(401).json({ message: "Authorization header is missing or improperly formatted" });
+        console.log("Step 1: Middleware execution started");
+
+        // Get the token from cookies
+        const authToken = req.cookies.auth_token;
+        // Correct key name here
+        console.log("Auth Token:", authToken);
+
+        // Check if the token exists
+        if (!authToken) {
+            return res.status(401).json({ message: "Authentication token is missing" });
         }
 
-        const token = authHeader.replace("Bearer ", "");
-        console.log("hello2")
+        console.log("Step 2: Token received");
+
         // Verify the JWT
-        const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-        if (!decodedToken) {
-            return res.status(401).json({ message: "Invalid token" });
-        }
-        console.log(decodedToken);
-        // Check if the user has admin privileges
+        const decodedToken = jwt.verify(authToken, process.env.JWT_SECRET);
+        console.log("Decoded Token:", decodedToken);
+
+        // Check if the user has admin privileges (if required)
         if (!decodedToken.isAdmin) {
             return res.status(403).json({ message: "Access denied, admin only" });
         }
-        console.log("Hello")
+
+        console.log("Step 3: Token successfully verified");
+
         // Attach the user data to the request object for further use
         req.user = decodedToken;
+
+        // Proceed to the next middleware
         next();
     } catch (error) {
         console.error("Error verifying JWT:", error);

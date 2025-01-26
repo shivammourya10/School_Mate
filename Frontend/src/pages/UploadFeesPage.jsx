@@ -31,6 +31,7 @@ const UploadFeesPage = () => {
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
+          withCredentials: true
         }
       );
       setUploadSuccess("Fee detail uploaded successfully."); // Set success message

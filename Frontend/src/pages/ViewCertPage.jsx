@@ -20,6 +20,7 @@ const ViewCertPage = () => {
       try {
         const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/certificates`, {
           timeout: 5000 // 5 seconds timeout
+          
         });
         if (!response.data || !response.data.Certificates) {
           throw new Error('No response from server');
@@ -80,10 +81,12 @@ const ViewCertPage = () => {
     try {
       const response = await axios.put(
         `${import.meta.env.VITE_BASE_URL}/api/certificateUp/${currentCert._id}`,
+        
         formData,
         {
           headers: { 'Content-Type': 'multipart/form-data' },
-        }
+          withCredentials: true
+        },
       );
       // Update certificates state
       setCertificates(certificates.map(cert => cert._id === currentCert._id ? response.data.cert : cert));
@@ -120,6 +123,7 @@ const ViewCertPage = () => {
     try {
       await axios.delete(
         `${import.meta.env.VITE_BASE_URL}/api/certificateUp/${currentCert._id}`
+        
       );
       // Remove deleted certificate from state
       setCertificates(certificates.filter(cert => cert._id !== currentCert._id));

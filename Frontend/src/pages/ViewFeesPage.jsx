@@ -84,6 +84,7 @@ function ViewFeesPage() {
         formData,
         {
           headers: { 'Content-Type': 'multipart/form-data' },
+          withCredentials: true
         }
       );
       // Update fees state

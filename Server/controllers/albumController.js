@@ -6,10 +6,11 @@ import { uploadOnCloudinary } from "../utils/imgeUploader.js";
 const isString = zod.string();
 
 export const createAlbumController = async (req, res) => {
-    const { name, description } = req.body;
+    const { name, description  } = req.body;
 
     const isName = isString.safeParse(name);
     const isDescription = isString.safeParse(description);
+    // const isYear = isString.safeParse(year);
     if (!isName.success || !isDescription.success) {
         return res.status(400).json({
             message: "Invalid name or description"

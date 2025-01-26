@@ -33,6 +33,7 @@ const UploadCertPage = () => {
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
+          withCredentials: true,
         }
       );
       setUploadSuccess("Certificate uploaded successfully."); // Set success message

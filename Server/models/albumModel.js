@@ -9,6 +9,10 @@ const albumSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    // year:{
+    //     type :String,
+    //     required : true
+    // },
     images: [{ // Renamed from 'image' to 'images'
         type: mongoose.Schema.Types.ObjectId,
         ref: "Children",
