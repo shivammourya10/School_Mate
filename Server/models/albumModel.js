@@ -9,16 +9,14 @@ const albumSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    // year:{
-    //     type :String,
-    //     required : true
-    // },
-    images: [{ // Renamed from 'image' to 'images'
+    year: {
+        type: String,
+        required: true
+    },
+    images: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Children",
-    }],
-}, {
-    timestamps: true,
-})
+        ref: 'children'
+    }]
+}, { timestamps: true });
 
-export default mongoose.model("Album", albumSchema);
+export default mongoose.model('Album', albumSchema);

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -6,6 +5,7 @@ const UploadGalleryItemPage = () => {
   const [albumNames, setAlbumNames] = useState([]);
   const [newAlbumName, setNewAlbumName] = useState("");
   const [newAlbumDescription, setNewAlbumDescription] = useState("");
+  const [newAlbumYear, setNewAlbumYear] = useState("");
   const [selectedAlbumId, setSelectedAlbumId] = useState("");
   const [uploadFile, setUploadFile] = useState(null);
   const [uploadError, setUploadError] = useState(null);
@@ -13,25 +13,53 @@ const UploadGalleryItemPage = () => {
   const [loadingAlbums, setLoadingAlbums] = useState(true);
   const [creatingAlbum, setCreatingAlbum] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [availableYears, setAvailableYears] = useState([]);
+  const [selectedYear, setSelectedYear] = useState("");
+
+  // Replace the current year generation logic with this:
+  const currentYear = new Date().getFullYear();
+  const years = Array.from(
+    { length: currentYear - 2023 }, 
+    (_, i) => 2024 + i
+  ).sort((a, b) => b - a); // Sort years in descending order (newest first)
 
   useEffect(() => {
-    const fetchAlbumNames = async () => {
+    const fetchYears = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/albumNames`);
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/albumYears`);
+        setAvailableYears(response.data.years || []);
+      } catch (err) {
+        setUploadError("Failed to load years. Please try again.");
+      }
+    };
+    fetchYears();
+  }, []);
+
+  useEffect(() => {
+    const fetchAlbumsByYear = async () => {
+      if (!selectedYear) {
+        setAlbumNames([]);
+        return;
+      }
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/albumsByYear/${selectedYear}`);
         setAlbumNames(response.data.albums || []);
         setLoadingAlbums(false);
       } catch (err) {
-        setUploadError("Failed to load album names. Please try again.");
+        setUploadError("Failed to load albums for selected year. Please try again.");
         setLoadingAlbums(false);
       }
     };
-    fetchAlbumNames();
-  }, []);
+    if (selectedYear) {
+      setLoadingAlbums(true);
+      fetchAlbumsByYear();
+    }
+  }, [selectedYear]);
 
   const handleCreateAlbum = async (e) => {
     e.preventDefault();
-    if (!newAlbumName || !newAlbumDescription) {
-      setUploadError("Please provide both name and description for the album.");
+    if (!newAlbumName || !newAlbumDescription || !newAlbumYear) {
+      setUploadError("Please provide name, description and year for the album.");
       return;
     }
     setCreatingAlbum(true);
@@ -39,14 +67,14 @@ const UploadGalleryItemPage = () => {
       const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/albumnUp`, {
         name: newAlbumName,
         description: newAlbumDescription,
-        
-        
+        year: newAlbumYear
       },
       {withCredentials: true}
     );
       setAlbumNames([...albumNames, response.data.album]);
       setNewAlbumName("");
       setNewAlbumDescription("");
+      setNewAlbumYear("");
       setUploadSuccess("Album created successfully.");
       setCreatingAlbum(false);
     } catch (err) {
@@ -117,6 +145,22 @@ const UploadGalleryItemPage = () => {
               required
             ></textarea>
           </div>
+          <div>
+            <label className="block text-gray-700 mb-2">Album Year</label>
+            <select
+              value={newAlbumYear}
+              onChange={(e) => setNewAlbumYear(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded"
+              required
+            >
+              <option value="">-- Select Year --</option>
+              {years.map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
+          </div>
           <button
             type="submit"
             className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors duration-300"
@@ -131,42 +175,70 @@ const UploadGalleryItemPage = () => {
         <h2 className="text-xl font-semibold mb-4">Upload Image to Album</h2>
         <form onSubmit={handleUploadImage} className="space-y-4">
           <div>
-            <label className="block text-gray-700 mb-2">Select Album</label>
-            {loadingAlbums ? (
-              <p>Loading albums...</p>
-            ) : (
-              <select
-                value={selectedAlbumId}
-                onChange={(e) => setSelectedAlbumId(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded"
-                required
-              >
-                <option value="">-- Select an Album --</option>
-                {albumNames.map((album) => (
-                  <option key={album._id} value={album._id}>
-                    {album.name}
-                  </option>
-                ))}
-              </select>
-            )}
-          </div>
-          <div>
-            <label className="block text-gray-700 mb-2">Select Image</label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setUploadFile(e.target.files[0])}
-              className="w-full"
+            <label className="block text-gray-700 mb-2">Select Year</label>
+            <select
+              value={selectedYear}
+              onChange={(e) => {
+                setSelectedYear(e.target.value);
+                setSelectedAlbumId(""); // Reset album selection when year changes
+              }}
+              className="w-full p-2 border border-gray-300 rounded"
               required
-            />
+            >
+              <option value="">-- Select Year --</option>
+              {availableYears.map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
           </div>
-          <button
-            type="submit"
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors duration-300"
-            disabled={uploadingImage}
-          >
-            {uploadingImage ? "Uploading..." : "Upload Image"}
-          </button>
+
+          {selectedYear && (
+            <div>
+              <label className="block text-gray-700 mb-2">Select Album</label>
+              {loadingAlbums ? (
+                <p>Loading albums...</p>
+              ) : (
+                <select
+                  value={selectedAlbumId}
+                  onChange={(e) => setSelectedAlbumId(e.target.value)}
+                  className="w-full p-2 border border-gray-300 rounded"
+                  required
+                >
+                  <option value="">-- Select an Album --</option>
+                  {albumNames.map((album) => (
+                    <option key={album._id} value={album._id}>
+                      {album.name}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+          )}
+
+          {selectedAlbumId && (
+            <div>
+              <label className="block text-gray-700 mb-2">Select Image</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setUploadFile(e.target.files[0])}
+                className="w-full"
+                required
+              />
+            </div>
+          )}
+
+          {selectedAlbumId && (
+            <button
+              type="submit"
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors duration-300"
+              disabled={uploadingImage}
+            >
+              {uploadingImage ? "Uploading..." : "Upload Image"}
+            </button>
+          )}
         </form>
       </div>
     </div>

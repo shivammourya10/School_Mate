@@ -4,11 +4,12 @@ import registerController from '../controllers/RegisterController.js';
 import verifyAdmin from '../middleware/verifyAdmin.js'
 import {upload} from '../middleware/multerMiddelware.js';
 import {certController , updateCertController, getCertificates, deleteCertController} from '../controllers/certController.js';
-import {createAlbumController,addImageToAlbumController,getImagesFromAlbumController,deleteImageFromAlbumController, getAllAlbumNamesController} from '../controllers/albumController.js';
+import {createAlbumController,addImageToAlbumController,getImagesFromAlbumController,deleteImageFromAlbumController, getAllAlbumNamesController,getAlbumsByYearController,getAlbumYearsController} from '../controllers/albumController.js';
 import {syllabusController,updateSyllabusController, getSyllabus, deleteSyllabusController} from '../controllers/syllabusController.js'
 import {feesController,editFeesController,getFees, deleteFeesController} from "../controllers/feesController.js"
 import {getAlbumDetailsController} from "../controllers/albumController.js";
 import logoutController from '../controllers/logoutController.js';
+
 
 const router = express.Router();
 
@@ -35,6 +36,9 @@ router.get('/albumNames', getAllAlbumNamesController);
 
 // Add the new route for fetching album details
 router.get('/album/:albumId', getAlbumDetailsController);
+
+router.get('/albumYears', getAlbumYearsController);
+router.get('/albumsByYear/:year', getAlbumsByYearController);
 
 router.delete('/albumnImages/:albumId/:imageId',deleteImageFromAlbumController);
 router.delete('/certificateUp/:certId',verifyAdmin, deleteCertController);

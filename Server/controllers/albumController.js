@@ -6,20 +6,36 @@ import { uploadOnCloudinary } from "../utils/imgeUploader.js";
 const isString = zod.string();
 
 export const createAlbumController = async (req, res) => {
-    const { name, description  } = req.body;
+    try {
+        const { name, description, year } = req.body;
 
-    const isName = isString.safeParse(name);
-    const isDescription = isString.safeParse(description);
-    // const isYear = isString.safeParse(year);
-    if (!isName.success || !isDescription.success) {
-        return res.status(400).json({
-            message: "Invalid name or description"
+        const isName = isString.safeParse(name);
+        const isDescription = isString.safeParse(description);
+        const isYear = isString.safeParse(year);
+
+        if (!isName.success || !isDescription.success || !isYear.success) {
+            return res.status(400).json({
+                message: "Invalid name, description, or year"
+            });
+        }
+
+        const album = await albumModel.create({ 
+            name, 
+            description,
+            year 
+        });
+
+        res.status(201).json({ 
+            message: "Album created successfully", 
+            album 
+        });
+    } catch (error) {
+        console.error('Album creation error:', error);
+        res.status(500).json({ 
+            message: "Failed to create album",
+            error: error.message 
         });
     }
-
-    const album = await albumModel.create({ name, description });
-
-    res.status(201).json({ message: "Album created successfully", album });
 };
 
 export const addImageToAlbumController = async (req, res) => {
@@ -61,22 +77,36 @@ export const getImagesFromAlbumController = async (req, res) => {
     const { albumId } = req.params;
 
     try {
-        const album = await albumModel.findById(albumId).populate('images'); // Changed 'image' to 'images'
+        const album = await albumModel.findById(albumId)
+            .populate({
+                path: 'images',
+                model: 'Children', // Make sure this matches your model name exactly
+                select: 'image'
+            });
 
         if (!album) {
-            return res.status(404).json({ message: "Album not found" });
+            return res.status(404).json({ 
+                message: "Album not found" 
+            });
         }
 
-        // Modified response to include album name and description
+        // Send consistent response structure
         res.status(200).json({ 
             message: "Images retrieved successfully", 
             name: album.name,
             description: album.description,
-            images: album.images 
+            year: album.year,
+            images: album.images.map(img => ({
+                _id: img._id,
+                image: img.image
+            }))
         });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Internal Server Error" });
+        console.error('Error fetching album images:', error);
+        res.status(500).json({ 
+            message: "Error fetching album images",
+            error: error.message 
+        });
     }
 };
 
@@ -132,4 +162,31 @@ export const getAlbumDetailsController = async (req, res) => {
         res.status(500).json({ message: "Internal Server Error" });
     }
 };
-    
+
+export const getAlbumYearsController = async (req, res) => {
+    try {
+        const years = await albumModel.distinct('year');
+        res.status(200).json({ 
+            message: "Years retrieved successfully", 
+            years 
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+export const getAlbumsByYearController = async (req, res) => {
+    const { year } = req.params;
+    try {
+        const albums = await albumModel.find({ year }, 'name');
+        res.status(200).json({ 
+            message: "Albums retrieved successfully", 
+            albums 
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
