@@ -33,7 +33,7 @@ const UploadGalleryItemPage = () => {
       }
     };
     fetchYears();
-  }, []);
+  }, [albumNames]);
 
   useEffect(() => {
     const fetchAlbumsByYear = async () => {

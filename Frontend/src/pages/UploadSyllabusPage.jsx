@@ -18,12 +18,6 @@ const UploadSyllabusPage = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [syllabus, setSyllabus] = useState([]);
 
-  const handleSelect = async (e) => {
-    e.preventDefault();
-    alert(e.target.value);
-    setTitle(e.target.value);
-  }
-
   useEffect(() => {
     const fetchSyllabus = async () => {
       try {
@@ -140,35 +134,11 @@ const UploadSyllabusPage = () => {
     }
   };
 
-  const openDeleteModal = (syllabus) => {
-    setCurrentSyllabus(syllabus);
-    setIsDeleteModalOpen(true);
-  };
-
-  const handleDelete = async () => {
-    if (!currentSyllabus) return;
-
-    setUpdateLoading(true);
-    setUpdateError(null);
-
-    try {
-      await axios.delete(
-        `${import.meta.env.VITE_BASE_URL}/api/syllabus/${currentSyllabus._id}`
-
-      );
-      setUpdateLoading(false);
-      closeDeleteModal();
-    } catch (err) {
-      // ...error handling...
-    }
-  };
-
   return (
     <div className="p-6 max-w-3xl mx-auto">
       <h1 className="text-3xl font-bold text-gray-800 mb-8 text-center">Upload Syllabus</h1>
       <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md">
         <div className="mb-4">
-
 
           {listOfGrades.length === 0 ?
             <div

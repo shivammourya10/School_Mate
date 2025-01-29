@@ -22,6 +22,7 @@ import {
   getAllAlbumNamesController,
   getAlbumsByYearController,
   getAlbumYearsController,
+  deleteAlbumById,
 } from "../controllers/albumController.js";
 import {
   syllabusController,
@@ -111,14 +112,19 @@ router.get("/albumImages/:albumId", getImagesFromAlbumController); // Corrected 
 router.get("/albumNames", getAllAlbumNamesController);
 
 // Add the new route for fetching album details
-router.get("/album/:albumId", getAlbumDetailsController);
+// router.get("/album/:albumId", getAlbumDetailsController);
 
 router.get("/albumYears", getAlbumYearsController);
 router.get("/albumsByYear/:year", getAlbumsByYearController);
 
-router.delete("/albumImages/:albumId/:imageId", deleteImageFromAlbumController);
+router.delete("/album/:albumId/:imageId", deleteImageFromAlbumController);
+router.delete("/album/:albumId", deleteAlbumById)
 router.delete("/certificateUp/:certId", verifyAdmin, deleteCertController);
 router.delete("/syllabus/:syllabusId", verifyAdmin, deleteSyllabusController);
 router.delete("/fees/:feesId", verifyAdmin, deleteFeesController);
+
+router.get("/verifyUser", verifyAdmin, (_, res) => {
+  res.status(200).json({ message: "You're verified" });
+})
 
 export default router;

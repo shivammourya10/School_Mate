@@ -92,8 +92,6 @@ export const processFile = async (req, res, next) => {
       // sets the new, converted file's path as the new path 
       req.file.path = outputPath;
       req.file.mimetype = "image/webp";
-      console.log("non processed path : ", req.file.path);
-      console.log("processed path : ", req.file.processedPath);
     } else if (mimetype === "application/pdf") {
       // Compress PDFs
       const pdfBytes = await fs.promises.readFile(filePath);
@@ -105,7 +103,11 @@ export const processFile = async (req, res, next) => {
 
       await fs.promises.writeFile(outputPath, compressedPdf);
 
-      req.file.processedPath = outputPath;
+      // deletes the original file
+      fs.unlinkSync(req.file.path);
+
+      // sets the new, converted file's path as the new path 
+      req.file.path = outputPath;
       req.file.mimetype = "application/pdf";
     }
 

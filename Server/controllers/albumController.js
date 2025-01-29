@@ -1,6 +1,7 @@
 import albumModel from "../models/albumModel.js";
 import childrenModel from "../models/childrenModel.js";
 import zod from "zod";
+import mongoose from "mongoose";
 import { uploadOnCloudinary } from "../utils/imageUploader.js";
 
 const isString = zod.string();
@@ -76,6 +77,10 @@ export const addImageToAlbumController = async (req, res) => {
 export const getImagesFromAlbumController = async (req, res) => {
   const { albumId } = req.params;
 
+  if (!mongoose.Types.ObjectId.isValid(albumId)) {
+    return res.status(400).json({ message: "Album id isn't valid" });
+  }
+
   try {
     const album = await albumModel.findById(albumId)
       .populate({
@@ -93,6 +98,7 @@ export const getImagesFromAlbumController = async (req, res) => {
     // Send consistent response structure
     res.status(200).json({
       message: "Images retrieved successfully",
+      _id: album._id,
       name: album.name,
       description: album.description,
       year: album.year,
@@ -119,12 +125,12 @@ export const deleteImageFromAlbumController = async (req, res) => {
       return res.status(404).json({ message: "Album not found" });
     }
     console.log(imageId)
-    const imageIndex = album.images.indexOf(imageId); // Changed 'image' to 'images'
+    const imageIndex = album.images.indexOf(imageId);
     if (imageIndex === -1) {
       return res.status(404).json({ message: "Image not found in album" });
     }
 
-    album.images.splice(imageIndex, 1); // Changed 'image' to 'images'
+    album.images.splice(imageIndex, 1);
     await album.save();
 
     await childrenModel.findByIdAndDelete(imageId);
@@ -135,6 +141,27 @@ export const deleteImageFromAlbumController = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+export const deleteAlbumById = async (req, res) => {
+  const { albumId } = req.params;
+  if (!albumId) {
+    return res.status(400).json({ message: "Album Id not provided" });
+  }
+  if (!mongoose.Types.ObjectId.isValid(albumId)) {
+    return res.status(400).json({ message: "Album id is not valid" });
+  }
+  try {
+    const deletedAlbum = await albumModel.findByIdAndDelete(albumId);
+    if (!deletedAlbum) {
+      return res.status(404).json({ message: "The album to be deleted was not found" });
+    }
+    return res.status(200).json({ message: "Album deleted successfully", deletedAlbum });
+
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({ message: "Something went wrong while deleting the album, please try again." })
+  }
+}
 
 export const getAllAlbumNamesController = async (req, res) => {
   try {
@@ -147,18 +174,24 @@ export const getAllAlbumNamesController = async (req, res) => {
 };
 
 export const getAlbumDetailsController = async (req, res) => {
+
   const { albumId } = req.params;
 
+  console.log("albumId : ", albumId);
+
+  if (!mongoose.Types.ObjectId.isValid(albumId)) {
+    return res.status(400).json({ message: "Invalid album id" });
+  }
+
   try {
-    const album = await albumModel.findById(albumId).populate('images'); // Ensured 'images' is used
+    const album = await albumModel.findById(albumId)
+    // .populate('images'); // Ensured 'images' is used
     if (!album) {
       return res.status(404).json({ message: "Album not found" });
     }
-
     res.status(200).json({ message: "Album details retrieved successfully", album });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Internal Server Error" });
     res.status(500).json({ message: "Internal Server Error" });
   }
 };

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import DashboardCard from "../components/DashboardCard";
 
-const AdminHomePage = () => {
+const AdminHomePage = ({ setIsUser }) => {
   const [dashboardData, setDashboardData] = useState({
     certificates: [],
     syllabus: [],
@@ -12,25 +12,25 @@ const AdminHomePage = () => {
   });
   const [showMenu, setShowMenu] = useState(false);
   const navigate = useNavigate();
-  const logout = async () =>{
+  const logout = async () => {
     try {
-      
-      localStorage.removeItem('auth_token');
-      navigate("/admin-signin");
-
+      // localStorage.removeItem('auth_token');
       const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/adminLogout`,
         {},
         { withCredentials: true });
       if (response.status === 200) {
+        localStorage.setItem("isUser", "false");
+        setIsUser(false);
+        alert("about to redirect");
         navigate("/admin-signin");
       }
     } catch (error) {
       console.error("Logout error:", error.response?.data || error.message);
-      
+
     }
   }
 
- 
+
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
@@ -53,62 +53,54 @@ const AdminHomePage = () => {
 
     fetchDashboardData();
   }, []);
-  
+
   const cardConfigs = [
     {
       title: "View Certificates",
       route: "/admin-getcertificates",
       icon: "📜",
-      count: dashboardData.certificates.length,
       isAddCard: false
     },
     {
       title: "View Syllabus",
       route: "/admin-getsyllabus",
       icon: "📚",
-      count: dashboardData.syllabus.length,
       isAddCard: false
     },
     {
       title: "View Fees",
       route: "/admin-getfees",
       icon: "💰",
-      count: dashboardData.fees.length,
       isAddCard: false
     },
     {
       title: "View Gallery",
       route: "/admin-getgallery",
       icon: "👶",
-      count: dashboardData.children.length,
       isAddCard: false
     },
     {
       title: "Add Certificate",
       route: "/admin-add-certificates",
       icon: "➕",
-      count: 0,
       isAddCard: true
     },
     {
       title: "Add Syllabus",
       route: "/admin-add-syllabus",
       icon: "➕",
-      count: 0,
       isAddCard: true
     },
     {
       title: "Add Fees",
       route: "/admin-add-fees",
       icon: "➕",
-      count: 0,
       isAddCard: true
     },
     {
       title: "Add Gallery Item",
       route: "/admin-add-gallery",
       icon: "➕",
-      count: 0,
       isAddCard: true
     }
   ];
@@ -131,12 +123,12 @@ const AdminHomePage = () => {
           </div>
           {showMenu && (
             <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg">
-              <button
-                onClick={() => navigate("/change-password")}
-                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
-              >
-                Change Password
-              </button>
+              {/* <button */}
+              {/*   onClick={() => navigate("/change-password")} */}
+              {/*   className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100" */}
+              {/* > */}
+              {/*   Change Password */}
+              {/* </button> */}
               <button
                 onClick={logout}
                 className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
@@ -147,7 +139,7 @@ const AdminHomePage = () => {
           )}
         </div>
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {cardConfigs.map((config, index) => (
           <DashboardCard

@@ -23,6 +23,8 @@ export const uploadOnCloudinary = async (localFilePath, fileType) => {
       unique_filename: false,
     });
 
+    console.log("file path is : ", localFilePath);
+
     fs.unlinkSync(localFilePath);
     return response;
   } catch (e) {
