@@ -1,4 +1,4 @@
-import {uploadOnCloudinary, deleteFromCloudinary} from "../utils/imgeUploader.js"; // Corrected the typo in the import
+import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/imageUploader.js"; // Corrected the typo in the import
 import File from "../models/feesModel.js"; // Use a consistent and clear name for your model
 import { z } from "zod";
 import mongoose from "mongoose";
@@ -50,10 +50,10 @@ function getPublicIdFromUrl(url) {
     }
     const publicIdWithExtension = segments[1];
     const publicId = publicIdWithExtension.substring(0, publicIdWithExtension.lastIndexOf('.'));
-    
+
     // Remove version prefix if present (e.g., "v1736620878/")
     const cleanedPublicId = publicId.split('/').slice(1).join('/');
-    
+
     return cleanedPublicId;
   } catch (error) {
     console.error("Error parsing URL:", error);
@@ -64,7 +64,7 @@ function getPublicIdFromUrl(url) {
 export const editFeesController = async (req, res) => {
   try {
     const { title } = req.body;
-    const { feesId } = req.params; 
+    const { feesId } = req.params;
 
     if (!title) {
       return res.status(400).json({ message: "Invalid title" });
@@ -140,10 +140,10 @@ export const deleteFeesController = async (req, res) => {
   }
 };
 
-export const getFees = async (req,res)=>{
-     const fees = await File.find();
-     if(!fees){
-       return res.status(404).json({message: "No fees details available"});
-     }
-     res.status(200).json({message: "Fees details", fees: fees});
+export const getFees = async (req, res) => {
+  const fees = await File.find();
+  if (!fees) {
+    return res.status(404).json({ message: "No fees details available" });
+  }
+  res.status(200).json({ message: "Fees details", fees: fees });
 }

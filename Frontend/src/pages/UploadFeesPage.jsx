@@ -69,7 +69,7 @@ const UploadFeesPage = () => {
           <label className="block text-gray-700 mb-2">Upload Image</label>
           <input
             type="file"
-            accept="image/*"
+            accept="image/*, application/pdf"
             onChange={(e) => setFile(e.target.files[0])}
             className="w-full"
             required

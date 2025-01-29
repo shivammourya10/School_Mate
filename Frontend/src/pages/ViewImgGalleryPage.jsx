@@ -54,22 +54,22 @@ const ViewImgGalleryPage = () => {
   useEffect(() => {
     const fetchAlbumImages = async () => {
       if (!selectedAlbum) return;
-      
+
       setLoading(true);
       setError(null); // Clear previous errors
-       
+
       try {
         const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/albumImages/${selectedAlbum._id}`);
-         
-        
+
+
         if (!response.data || !response.data.images) {
-            throw new Error('Invalid response format');
+          throw new Error('Invalid response format');
         }
-        
+
         setAlbumImages({
-            name: response.data.name,
-            description: response.data.description,
-            images: response.data.images
+          name: response.data.name,
+          description: response.data.description,
+          images: response.data.images
         });
       } catch (err) {
         console.error('Error details:', err.response || err); // Better error logging
@@ -91,10 +91,10 @@ const ViewImgGalleryPage = () => {
     setDeleting(true);
     try {
       await axios.delete(
-        `${import.meta.env.VITE_BASE_URL}/api/albumnImages/${selectedAlbum._id}/${imageId}`,
+        `${import.meta.env.VITE_BASE_URL}/api/albumImages/${selectedAlbum._id}/${imageId}`,
         { withCredentials: true }
       );
-      
+
       // Update the UI by removing the deleted image
       setAlbumImages(prev => ({
         ...prev,
@@ -113,7 +113,7 @@ const ViewImgGalleryPage = () => {
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <h1 className="text-3xl font-bold text-gray-800 mb-8 text-center">Gallery</h1>
-      
+
       {error && <div className="text-red-500 text-center mb-4">{error}</div>}
 
       {/* Year Selection */}
@@ -141,11 +141,10 @@ const ViewImgGalleryPage = () => {
               <button
                 key={album._id}
                 onClick={() => setSelectedAlbum(album)}
-                className={`px-4 py-2 rounded ${
-                  selectedAlbum?._id === album._id
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-200 hover:bg-gray-300"
-                }`}
+                className={`px-4 py-2 rounded ${selectedAlbum?._id === album._id
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-200 hover:bg-gray-300"
+                  }`}
               >
                 {album.name}
               </button>
@@ -156,7 +155,7 @@ const ViewImgGalleryPage = () => {
 
       {/* Images Display - Only show if album is selected */}
       {loading && <div className="text-center">Loading...</div>}
-      
+
       {albumImages && (
         <div>
           <h2 className="text-2xl font-semibold mb-4"> Album :{albumImages.name}</h2>

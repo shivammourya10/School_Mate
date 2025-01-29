@@ -4,6 +4,7 @@ import { CheckCircleIcon } from '@heroicons/react/24/solid'; // Only import nece
 
 const UploadCertPage = () => {
   const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(null);
@@ -23,9 +24,12 @@ const UploadCertPage = () => {
     setUploadError(null);
     setUploadSuccess(null);
 
+
     const formData = new FormData();
     formData.append("title", title);
+    formData.append("description", description);
     formData.append("file", file);
+
 
     try {
       const response = await axios.post(
@@ -38,6 +42,7 @@ const UploadCertPage = () => {
       );
       setUploadSuccess("Certificate uploaded successfully."); // Set success message
       setTitle(''); // Clear title input
+      setDescription("");
       setFile(null);  // Clear file state to reset file input
     } catch (err) {
       let errorMessage;
@@ -46,6 +51,9 @@ const UploadCertPage = () => {
       } else {
         errorMessage = "Failed to upload certificate. Please try again.";
       }
+      setFile(null);
+      setTitle("");
+      setDescription("");
       setUploadError(errorMessage);
     } finally {
       setUploading(false);
@@ -68,11 +76,21 @@ const UploadCertPage = () => {
             placeholder="Enter certificate title"
             required
           />
+          <label className="block text-gray-700 mb-2 pt-4">Description</label>
+          <textarea
+            type="text"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded h-[10rem]"
+            placeholder="Enter certificate description"
+            required
+          />
         </div>
         <div className="mb-4">
           <label className="block text-gray-700 mb-2">Upload File</label>
           <input
             // Removed key attribute to prevent remounting issues
+            name={!file ? "" : file.name}
             type="file"
             accept="image/*"
             onChange={(e) => setFile(e.target.files[0])}
