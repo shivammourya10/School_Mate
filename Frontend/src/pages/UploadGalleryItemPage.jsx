@@ -19,7 +19,7 @@ const UploadGalleryItemPage = () => {
   // Replace the current year generation logic with this:
   const currentYear = new Date().getFullYear();
   const years = Array.from(
-    { length: currentYear - 2023 }, 
+    { length: currentYear - 2023 },
     (_, i) => 2024 + i
   ).sort((a, b) => b - a); // Sort years in descending order (newest first)
 
@@ -33,7 +33,7 @@ const UploadGalleryItemPage = () => {
       }
     };
     fetchYears();
-  }, []);
+  }, [albumNames]);
 
   useEffect(() => {
     const fetchAlbumsByYear = async () => {
@@ -64,13 +64,13 @@ const UploadGalleryItemPage = () => {
     }
     setCreatingAlbum(true);
     try {
-      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/albumnUp`, {
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/albumUp`, {
         name: newAlbumName,
         description: newAlbumDescription,
         year: newAlbumYear
       },
-      {withCredentials: true}
-    );
+        { withCredentials: true }
+      );
       setAlbumNames([...albumNames, response.data.album]);
       setNewAlbumName("");
       setNewAlbumDescription("");
@@ -100,7 +100,7 @@ const UploadGalleryItemPage = () => {
     formData.append("file", uploadFile);
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/albumnImage/${selectedAlbumId}`,
+        `${import.meta.env.VITE_BASE_URL}/api/albumImage/${selectedAlbumId}`,
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -119,7 +119,7 @@ const UploadGalleryItemPage = () => {
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <h1 className="text-3xl font-bold text-gray-800 mb-8 text-center">Upload Gallery Items</h1>
-      
+
       {uploadError && <div className="text-center text-red-600 mb-4">{uploadError}</div>}
       {uploadSuccess && <div className="text-center text-green-600 mb-4">{uploadSuccess}</div>}
 

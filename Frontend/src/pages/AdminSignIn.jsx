@@ -1,5 +1,5 @@
-import  { useState } from "react";
-import {  useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function AdminSignIn() {
@@ -17,7 +17,7 @@ function AdminSignIn() {
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/adminLogin`,
         { username, password },
-        {withCredentials: true}
+        { withCredentials: true }
       );
 
       if (response.status === 200) {
@@ -105,14 +105,6 @@ function AdminSignIn() {
 
 
         </form>
-      </div>
-
-      <div className="max-w-md mx-auto w-full mt-8">
-        <p className="text-xs text-gray-500 text-center px-4">
-          By signing in, you agree to{" "}
-          <span className="underline cursor-pointer">Terms of Service</span> and{" "}
-          <span className="underline cursor-pointer">Privacy Policy</span>
-        </p>
       </div>
     </div>
   );
