@@ -13,6 +13,8 @@ import UploadFeesPage from "./pages/UploadFeesPage";
 import UploadImgGalleryPage from "./pages/UploadGalleryItemPage";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import GenerateOTP from "./pages/GenerateOTP";
+import ResetPassword from "./pages/ResetPassword";
 
 function App() {
   const [isUser, setIsUser] = useState(() => {
@@ -27,7 +29,13 @@ function App() {
       try {
         const response = await axios.get(
           `${import.meta.env.VITE_BASE_URL}/api/verifyUser`,
-          { withCredentials: true }
+          {
+            withCredentials: true,
+            headers: {
+              'Cache-Control': 'no-cache',
+              'Pragma': 'no-cache'
+            }
+          }
         );
         console.log(response);
         if (response.status === 200) {
@@ -115,10 +123,19 @@ function App() {
           }
         />
 
+        <Route
+          path="/reset-password/:resetJWT"
+          element={isUser ? <Navigate to="/admin-homepage" /> : <ResetPassword />}
+        />
+
         {/* Protected Admin Routes */}
         <Route
           path="admin-homepage"
           element={isUser ? <AdminHomePage setIsUser={setIsUser} /> : <Navigate to="/admin-signin" />}
+        />
+        <Route
+          path="generate-otp"
+          element={isUser ? <Navigate to="/admin-homepage" /> : <GenerateOTP />}
         />
         <Route
           path="/admin-getcertificates"

@@ -88,6 +88,10 @@ function AdminSignIn() {
                 )}
               </button>
             </div>
+            <button
+              className="font-medium text-sm ml-1 hover:underline text-gray-500"
+              onClick={() => navigate("/generate-otp")}
+            >Forgot password?</button>
           </div>
 
           {error && (

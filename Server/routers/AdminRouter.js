@@ -38,8 +38,13 @@ import {
 } from "../controllers/feesController.js";
 import { getAlbumDetailsController } from "../controllers/albumController.js";
 import logoutController from "../controllers/logoutController.js";
+import { generateCode, updatePassword, verifyCode, verifyResetJWT } from "../controllers/generateCodeController.js";
 
 const router = express.Router();
+
+router.post("/generateCode", generateCode);
+router.post("/verifyCode", verifyCode);
+router.post("/verify/:resetJWT", verifyResetJWT);
 
 // Route for admin login
 router.post("/adminLogin", loginController);
@@ -78,6 +83,8 @@ router.post(
   addImageToAlbumController
 );
 router.post("/adminLogout", verifyAdmin, logoutController);
+
+router.put("/admin-password/:resetJWT", updatePassword);
 
 router.put(
   "/feesUp/:feesId",

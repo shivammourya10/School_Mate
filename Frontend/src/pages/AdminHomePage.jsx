@@ -21,7 +21,6 @@ const AdminHomePage = ({ setIsUser }) => {
       if (response.status === 200) {
         localStorage.setItem("isUser", "false");
         setIsUser(false);
-        alert("about to redirect");
         navigate("/admin-signin");
       }
     } catch (error) {
